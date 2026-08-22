@@ -1,3 +1,4 @@
+import time
 import json
 from openai import OpenAI
 from app.config import OPENAI_API_KEY, TRIAGE_MODEL
@@ -13,6 +14,8 @@ Classify the ticket and respond ONLY with JSON matching this schema, no prose:
 
 
 def triage_node(state: PipelineState) -> PipelineState:
+    start = time.perf_counter()
+
     response = client.chat.completions.create(
         model=TRIAGE_MODEL,
         response_format={"type": "json_object"},
@@ -26,4 +29,7 @@ def triage_node(state: PipelineState) -> PipelineState:
     )
     parsed = json.loads(response.choices[0].message.content)
     state.triage = TriageResult(**parsed)
+
+    state.latency_ms["triage"] = round((time.perf_counter() - start) * 1000, 1)
+    state.token_usage["triage"] = response.usage.total_tokens
     return state

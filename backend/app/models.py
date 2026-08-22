@@ -63,3 +63,5 @@ class PipelineState(BaseModel):
     guardrail: Optional[GuardrailVerdict] = None
     approval: Optional[ApprovalDecision] = None
     final_text: Optional[str] = None
+    token_usage: dict[str, int] = Field(default_factory=dict)
+    latency_ms: dict[str, float] = Field(default_factory=dict)

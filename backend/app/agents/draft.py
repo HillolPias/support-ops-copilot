@@ -1,3 +1,4 @@
+import time
 import json
 from openai import OpenAI
 from app.config import OPENAI_API_KEY, DRAFT_MODEL
@@ -32,6 +33,8 @@ def draft_node(state: PipelineState) -> PipelineState:
         f"Context:\n{context}"
     )
 
+    start = time.perf_counter()
+
     response = client.chat.completions.create(
         model=DRAFT_MODEL,
         response_format={"type": "json_object"},
@@ -42,4 +45,7 @@ def draft_node(state: PipelineState) -> PipelineState:
     )
     parsed = json.loads(response.choices[0].message.content)
     state.draft = DraftResponse(**parsed)
+
+    state.latency_ms["draft"] = round((time.perf_counter() - start) * 1000, 1)
+    state.token_usage["draft"] = response.usage.total_tokens
     return state

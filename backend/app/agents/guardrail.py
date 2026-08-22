@@ -1,3 +1,4 @@
+import time
 import json
 import re
 from openai import OpenAI
@@ -32,6 +33,8 @@ def guardrail_node(state: PipelineState) -> PipelineState:
 
     context = "\n\n".join(c.text for c in state.retrieved) or "No context."
 
+    start = time.perf_counter()
+
     response = client.chat.completions.create(
         model=GUARDRAIL_MODEL,
         response_format={"type": "json_object"},
@@ -52,4 +55,7 @@ def guardrail_node(state: PipelineState) -> PipelineState:
         safety_flags=flags,
         notes=parsed.get("notes", ""),
     )
+
+    state.latency_ms["guardrail"] = round((time.perf_counter() - start) * 1000, 1)
+    state.token_usage["guardrail"] = response.usage.total_tokens
     return state

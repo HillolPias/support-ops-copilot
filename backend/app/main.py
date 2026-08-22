@@ -58,4 +58,10 @@ def submit_decision(ticket_id: str, decision: str, edited_text: str | None = Non
         "status": "done",
         "ticket_id": ticket_id,
         "approval": result.get("approval"),
+        "metrics": {
+            "token_usage": result.get("token_usage", {}),
+            "latency_ms": result.get("latency_ms", {}),
+            "total_tokens": sum(result.get("token_usage", {}).values()),
+            "total_latency_ms": round(sum(result.get("latency_ms", {}).values()), 1),
+        },
     }
