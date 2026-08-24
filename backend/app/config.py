@@ -1,7 +1,10 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+BACKEND_DIR = Path(__file__).resolve().parent.parent  # .../backend
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
@@ -13,5 +16,5 @@ GUARDRAIL_MODEL = os.getenv("GUARDRAIL_MODEL", "gpt-4o-mini")
 
 FAITHFULNESS_THRESHOLD = float(os.getenv("FAITHFULNESS_THRESHOLD", 0.7))
 
-CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", "./chroma_data")
-DOCS_DIR = os.getenv("DOCS_DIR", "./data/docs")
+CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", str(BACKEND_DIR / "chroma_data"))
+DOCS_DIR = os.getenv("DOCS_DIR", str(BACKEND_DIR / "data" / "docs"))

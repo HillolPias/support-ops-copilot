@@ -1,0 +1,34 @@
+name: Agent evals
+
+on:
+  pull_request:
+    paths:
+      - "backend/app/agents/**"
+      - "backend/app/graph.py"
+      - "backend/data/docs/**"
+      - "evals/**"
+
+jobs:
+  run-evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Ingest knowledge base
+        working-directory: backend
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv sync
+          uv run python -m app.rag.ingest
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Run eval gate
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          uv run --project backend python evals/run_evals.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
