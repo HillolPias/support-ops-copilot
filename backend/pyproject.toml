@@ -8,6 +8,7 @@ dependencies = [
     "chromadb>=1.5.9",
     "fastapi>=0.141.1",
     "langgraph>=1.2.10",
+    "mcp<2.0.0",
     "openai>=2.52.0",
     "pydantic>=2.13.4",
     "python-dotenv>=1.2.2",
